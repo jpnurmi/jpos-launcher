@@ -19,6 +19,7 @@ class LauncherButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return YaruBanner(
+      onTap: onPressed,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -26,7 +27,6 @@ class LauncherButton extends StatelessWidget {
           Text(title, style: const TextStyle(fontSize: 24)),
         ],
       ),
-      onTap: () => onPressed,
     );
   }
 }
