@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:yaml/yaml.dart';
 import 'package:yaru/yaru.dart';
 import 'package:yaru_icons/yaru_icons.dart';
@@ -6,8 +7,9 @@ import 'package:yaru_icons/yaru_icons.dart';
 import 'io.dart';
 import 'widgets.dart';
 
-void main() {
-  final config = loadConfig('jpos.yaml');
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final config = await loadConfig(rootBundle, 'jpos.yaml');
   runApp(LauncherApp(config: config['launcher'] as YamlList));
 }
 
