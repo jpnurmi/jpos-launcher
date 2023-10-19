@@ -1,0 +1,10 @@
+launcher:
+  - icon: weather
+    title: Weather
+    executable: jpos-weather
+  - icon: terminal
+    title: Terminal
+    executable: weston-terminal
+  - icon: settings
+    title: Settings
+    executable: jpos-settings

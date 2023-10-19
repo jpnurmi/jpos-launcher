@@ -3,29 +3,37 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:yaml/yaml.dart';
 import 'package:yaru/yaru.dart';
 import 'package:yaru_icons/yaru_icons.dart';
 import 'package:yaru_widgets/yaru_widgets.dart';
 
+import 'config.dart';
+
 void main() {
-  runApp(const LauncherApp());
+  final config = loadConfig('jpos.yaml');
+  runApp(LauncherApp(config: config['launcher'] as YamlList));
 }
 
 class LauncherApp extends StatelessWidget {
-  const LauncherApp({super.key});
+  const LauncherApp({super.key, required this.config});
+
+  final YamlList config;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: yaruLight,
       darkTheme: yaruDark,
-      home: const LancherPage(),
+      home: LancherPage(config: config),
     );
   }
 }
 
 class LancherPage extends StatefulWidget {
-  const LancherPage({super.key});
+  const LancherPage({super.key, required this.config});
+
+  final YamlList config;
 
   @override
   State<LancherPage> createState() => _LancherPageState();
@@ -43,35 +51,19 @@ class _LancherPageState extends State<LancherPage> {
         return Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                width: constraints.maxWidth * 0.25,
-                height: constraints.maxHeight * 0.45,
-                child: const LauncherButton(
-                  icon: YaruIcons.weather,
-                  title: 'Weather',
-                  executable: 'jpos-weather',
-                ),
-              ),
-              SizedBox(
-                width: constraints.maxWidth * 0.25,
-                height: constraints.maxHeight * 0.45,
-                child: const LauncherButton(
-                  icon: YaruIcons.terminal,
-                  title: 'Terminal',
-                  executable: 'weston-terminal',
-                ),
-              ),
-              SizedBox(
-                width: constraints.maxWidth * 0.25,
-                height: constraints.maxHeight * 0.45,
-                child: const LauncherButton(
-                  icon: YaruIcons.settings,
-                  title: 'Settings',
-                  executable: 'jpos-settings',
-                ),
-              ),
-            ],
+            children: widget.config.cast<YamlMap>().map(
+              (entry) {
+                return SizedBox(
+                  width: constraints.maxWidth / (widget.config.length + 1),
+                  height: constraints.maxHeight * 0.45,
+                  child: LauncherButton(
+                    icon: YaruIcons.all[entry['icon'] as String]!,
+                    title: entry['title'] as String,
+                    executable: entry['executable'] as String,
+                  ),
+                );
+              },
+            ).toList(),
           ),
         );
       }),
