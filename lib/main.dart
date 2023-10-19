@@ -16,13 +16,11 @@ class LauncherApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return YaruTheme(builder: (context, yaru, child) {
-      return MaterialApp(
-        theme: yaru.theme,
-        darkTheme: yaru.darkTheme,
-        home: const LancherPage(),
-      );
-    });
+    return MaterialApp(
+      theme: yaruLight,
+      darkTheme: yaruDark,
+      home: const LancherPage(),
+    );
   }
 }
 
