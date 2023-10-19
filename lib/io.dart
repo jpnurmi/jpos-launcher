@@ -4,6 +4,13 @@ import 'package:path/path.dart' as path;
 import 'package:xdg_directories/xdg_directories.dart' as xdg;
 import 'package:yaml/yaml.dart';
 
+Future<void> launchApp(
+  String executable, {
+  List<String>? arguments,
+}) {
+  return Process.run(executable, arguments ?? []);
+}
+
 YamlMap loadConfig(String fileName) {
   final file = configFile(fileName);
   return loadYaml(file.readAsStringSync()) as YamlMap;
