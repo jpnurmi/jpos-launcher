@@ -59,7 +59,7 @@ class _LauncherClockState extends State<LauncherClock> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Text(DateFormat('yyy-MM-dd hh:mm:ss').format(_now)),
+      child: Text(DateFormat('yyyy-MM-dd HH:mm:ss').format(_now)),
     );
   }
 }
