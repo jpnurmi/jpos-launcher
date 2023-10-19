@@ -1,6 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:yaru/yaru.dart';
+import 'package:yaru_icons/yaru_icons.dart';
+import 'package:yaru_widgets/yaru_widgets.dart';
 
 void main() {
   runApp(const LauncherApp());
@@ -11,9 +16,13 @@ class LauncherApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: LancherPage(),
-    );
+    return YaruTheme(builder: (context, yaru, child) {
+      return MaterialApp(
+        theme: yaru.theme,
+        darkTheme: yaru.darkTheme,
+        home: const LancherPage(),
+      );
+    });
   }
 }
 
@@ -30,26 +39,44 @@ class _LancherPageState extends State<LancherPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('jpOS'),
+        actions: const [LauncherClock()],
       ),
-      body: const Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            LauncherButton(
-              title: 'Weather',
-              executable: 'jpos-weather',
-            ),
-            LauncherButton(
-              title: 'Terminal',
-              executable: 'weston-terminal',
-            ),
-            LauncherButton(
-              title: 'Settings',
-              executable: 'jpos-settings',
-            ),
-          ],
-        ),
-      ),
+      body: LayoutBuilder(builder: (context, constraints) {
+        return Center(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                width: constraints.maxWidth * 0.25,
+                height: constraints.maxHeight * 0.45,
+                child: const LauncherButton(
+                  icon: YaruIcons.weather,
+                  title: 'Weather',
+                  executable: 'jpos-weather',
+                ),
+              ),
+              SizedBox(
+                width: constraints.maxWidth * 0.25,
+                height: constraints.maxHeight * 0.45,
+                child: const LauncherButton(
+                  icon: YaruIcons.terminal,
+                  title: 'Terminal',
+                  executable: 'weston-terminal',
+                ),
+              ),
+              SizedBox(
+                width: constraints.maxWidth * 0.25,
+                height: constraints.maxHeight * 0.45,
+                child: const LauncherButton(
+                  icon: YaruIcons.settings,
+                  title: 'Settings',
+                  executable: 'jpos-settings',
+                ),
+              ),
+            ],
+          ),
+        );
+      }),
     );
   }
 }
@@ -64,24 +91,61 @@ Future<void> launchApp(
 class LauncherButton extends StatelessWidget {
   const LauncherButton({
     super.key,
+    required this.icon,
     required this.title,
     required this.executable,
     this.arguments = const [],
   });
 
-  final String executable;
+  final IconData icon;
   final String title;
+  final String executable;
   final List<String> arguments;
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        fixedSize: const Size(192, 192),
-        textStyle: const TextStyle(fontSize: 24),
+    return YaruBanner(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Icon(icon, size: 128),
+          Text(title, style: const TextStyle(fontSize: 24)),
+        ],
       ),
-      onPressed: () => launchApp(executable, arguments: arguments),
-      child: Text(title),
+      onTap: () => launchApp(executable, arguments: arguments),
+    );
+  }
+}
+
+class LauncherClock extends StatefulWidget {
+  const LauncherClock({super.key});
+
+  @override
+  State<LauncherClock> createState() => _LauncherClockState();
+}
+
+class _LauncherClockState extends State<LauncherClock> {
+  late final Timer _timer;
+  var _now = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 1),
+        (_) => setState(() => _now = DateTime.now()));
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Text(DateFormat('yyy-MM-dd hh:mm:ss').format(_now)),
     );
   }
 }
